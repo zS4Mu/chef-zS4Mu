@@ -1,0 +1,46 @@
+{
+  "nome": "chiave-mappatura",
+  "data": "2026-05-20",
+  "mappatura": {
+    "0": {
+      "hand": "Left",
+      "dita_estese": 0
+    },
+    "1": {
+      "hand": "Left",
+      "dita_estese": 1
+    },
+    "2": {
+      "hand": "Left",
+      "dita_estese": 2
+    },
+    "3": {
+      "hand": "Left",
+      "dita_estese": 3
+    },
+    "4": {
+      "hand": "Left",
+      "dita_estese": 4
+    },
+    "5": {
+      "hand": "Right",
+      "dita_estese": 0
+    },
+    "6": {
+      "hand": "Right",
+      "dita_estese": 1
+    },
+    "7": {
+      "hand": "Right",
+      "dita_estese": 2
+    },
+    "8": {
+      "hand": "Right",
+      "dita_estese": 3
+    },
+    "9": {
+      "hand": "Right",
+      "dita_estese": 4
+    }
+  }
+}

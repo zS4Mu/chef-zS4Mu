@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mappatura Cifre</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+  canvas { display: block; width: 100%; height: 100%; }
+  #error-overlay {
+    position: fixed; inset: 0; display: none;
+    align-items: center; justify-content: center;
+    color: white; font: 18px monospace; background: #000;
+    z-index: 10;
+  }
+  #error-overlay.visible { display: flex; }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<video id="video" autoplay playsinline></video>
+<div id="error-overlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection@2"></script>
+
+<script>
+"use strict";
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const errorOverlay = document.getElementById('error-overlay');
+
+const CAM_PREVIEW_W = 240;
+const CAM_PREVIEW_H = 180;
+const CAM_MARGIN = 16;
+const EXTEND_THRESHOLD = 0.7; // cos(angle) — 1 = straight, 0 = 90° bent
+
+const COLORS = {
+  Right: { stroke: 'rgba(0, 204, 255, 0.7)', label: '#00ccff', tag: 'D' },
+  Left: { stroke: 'rgba(0, 255, 102, 0.7)', label: '#00ff66', tag: 'S' }
+};
+
+const LABELS = {
+  wrist: 'A1', thumb_cmc: 'A2', thumb_mcp: 'B1', thumb_ip: 'C1', thumb_tip: 'E1',
+  index_finger_mcp: 'B2', index_finger_pip: 'C2', index_finger_dip: 'D2', index_finger_tip: 'E2',
+  middle_finger_mcp: 'B3', middle_finger_pip: 'C3', middle_finger_dip: 'D3', middle_finger_tip: 'E3',
+  ring_finger_mcp: 'B4', ring_finger_pip: 'C4', ring_finger_dip: 'D4', ring_finger_tip: 'E4',
+  pinky_finger_mcp: 'B5', pinky_finger_pip: 'C5', pinky_finger_dip: 'D5', pinky_finger_tip: 'E5'
+};
+
+const CONNECTIONS = [
+  [0, 1], [1, 2], [2, 3], [3, 4],
+  [0, 5], [5, 6], [6, 7], [7, 8],
+  [0, 9], [9, 10], [10, 11], [11, 12],
+  [0, 13], [13, 14], [14, 15], [15, 16],
+  [0, 17], [17, 18], [18, 19], [19, 20],
+  [5, 9], [9, 13], [13, 17]
+];
+
+const touchPattern = {};
+const LEFT_DIGITS = [0, 1, 2, 3, 4];
+const RIGHT_DIGITS = [5, 6, 7, 8, 9];
+let detector = null;
+let lastTimestamp = 0;
+let recordingState = null;
+let allRegistered = false;
+let phase = 'left'; // 'left' -> 'right' -> 'done'
+let currentHand = 'Left';
+
+function showError(msg) {
+  errorOverlay.textContent = msg;
+  errorOverlay.classList.add('visible');
+}
+
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+    await video.play();
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  } catch (err) {
+    showError("Permesso fotocamera negato.");
+    throw err;
+  }
+}
+
+async function initDetector() {
+  try {
+    const model = handPoseDetection.SupportedModels.MediaPipeHands;
+    detector = await handPoseDetection.createDetector(model, {
+      runtime: 'mediapipe',
+      solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands',
+      modelType: 'full',
+      maxHands: 2
+    });
+  } catch (err) {
+    showError('Errore modello: ' + err.message);
+    throw err;
+  }
+}
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+function isFingerStraight(keypoints, mcp, pip, dip) {
+  const v1x = keypoints[pip].x - keypoints[mcp].x;
+  const v1y = keypoints[pip].y - keypoints[mcp].y;
+  const v2x = keypoints[dip].x - keypoints[pip].x;
+  const v2y = keypoints[dip].y - keypoints[pip].y;
+  const dot = v1x * v2x + v1y * v2y;
+  const m1 = Math.sqrt(v1x * v1x + v1y * v1y);
+  const m2 = Math.sqrt(v2x * v2x + v2y * v2y);
+  if (m1 === 0 || m2 === 0) return false;
+  return (dot / (m1 * m2)) > EXTEND_THRESHOLD;
+}
+
+function countExtendedFingers(keypoints) {
+  let count = 0;
+  if (isFingerStraight(keypoints, 5, 6, 7)) count++;
+  if (isFingerStraight(keypoints, 9, 10, 11)) count++;
+  if (isFingerStraight(keypoints, 13, 14, 15)) count++;
+  if (isFingerStraight(keypoints, 17, 18, 19)) count++;
+  return count;
+}
+
+function drawLabel(x, y, text, color) {
+  ctx.font = '14px monospace';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, x, y);
+}
+
+function drawLine(x1, y1, x2, y2, color) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function drawSkeleton(hands) {
+  for (const hand of hands) {
+    const colors = COLORS[hand.handedness] || COLORS.Right;
+    const kp = hand.keypoints;
+    for (const [i, j] of CONNECTIONS) {
+      if (kp[i] && kp[j]) {
+        drawLine(kp[i].x, kp[i].y, kp[j].x, kp[j].y, colors.stroke);
+      }
+    }
+    for (const point of kp) {
+      const label = LABELS[point.name];
+      if (label) {
+        drawLabel(point.x, point.y, label, colors.label);
+      }
+    }
+    if (kp[0]) {
+      drawLabel(kp[0].x + 20, kp[0].y - 20, colors.tag, colors.label);
+    }
+  }
+}
+
+const TABLE_COLS = 5;
+const CELL_SIZE = 40;
+const CELL_GAP = 6;
+let recognizedNumber = null;
+
+function getTableOrigin() {
+  const totalW = TABLE_COLS * (CELL_SIZE + CELL_GAP);
+  return { x: (canvas.width - totalW) / 2, y: 220 };
+}
+
+function canRegister(i) {
+  if (phase === 'left') return LEFT_DIGITS.includes(i);
+  if (phase === 'right') return RIGHT_DIGITS.includes(i);
+  return false;
+}
+
+function drawNumberTable() {
+  const origin = getTableOrigin();
+  for (let i = 0; i < 10; i++) {
+    const col = i % TABLE_COLS;
+    const row = Math.floor(i / TABLE_COLS);
+    const x = origin.x + col * (CELL_SIZE + CELL_GAP);
+    const y = origin.y + row * (CELL_SIZE + CELL_GAP);
+    let color = '#333';
+    if (recognizedNumber === i) {
+      color = '#00ccff';
+    } else if (touchPattern[i] !== undefined) {
+      color = '#fff';
+    } else if (canRegister(i)) {
+      color = '#555';
+    }
+    ctx.fillStyle = color;
+    ctx.font = '24px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(i.toString(), x + CELL_SIZE / 2, y + CELL_SIZE / 2);
+  }
+}
+
+function drawPhaseIndicator() {
+  const text = phase === 'left' ? 'MANO SINISTRA (0-4)' : phase === 'right' ? 'MANO DESTRA (5-9)' : 'COMPLETATO';
+  ctx.font = '20px monospace';
+  ctx.fillStyle = '#888';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText(text, canvas.width / 2, 170);
+}
+
+function getClickedNumber(mx, my) {
+  const origin = getTableOrigin();
+  for (let i = 0; i < 10; i++) {
+    const col = i % TABLE_COLS;
+    const row = Math.floor(i / TABLE_COLS);
+    const x = origin.x + col * (CELL_SIZE + CELL_GAP);
+    const y = origin.y + row * (CELL_SIZE + CELL_GAP);
+    if (mx >= x && mx <= x + CELL_SIZE && my >= y && my <= y + CELL_SIZE) {
+      return i;
+    }
+  }
+  return null;
+}
+
+function drawCountdown() {
+  if (!recordingState) return;
+  ctx.font = '36px monospace';
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`Registrazione ${recordingState.number} (${recordingState.hand === 'Left' ? 'SINISTRA' : 'DESTRA'})... ${recordingState.countdown}`, canvas.width / 2, 120);
+}
+
+function drawExportButton() {
+  const bw = 240, bh = 50;
+  const bx = (canvas.width - bw) / 2;
+  const by = canvas.height - 80;
+  ctx.fillStyle = allRegistered ? '#fff' : '#333';
+  ctx.font = '20px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(allRegistered ? 'EXPORT KEY' : 'Registra 0-9 per sbloccare', canvas.width / 2, by + bh / 2);
+}
+
+function isExportClick(mx, my) {
+  if (!allRegistered) return false;
+  const bw = 240, bh = 50;
+  const bx = (canvas.width - bw) / 2;
+  const by = canvas.height - 80;
+  return mx >= bx && mx <= bx + bw && my >= by && my <= by + bh;
+}
+
+function captureCount(hands) {
+  let maxCount = 0;
+  for (const hand of hands) {
+    const c = countExtendedFingers(hand.keypoints);
+    if (c > maxCount) maxCount = c;
+  }
+  return maxCount;
+}
+
+function getHandCount(hands, targetHand) {
+  for (const hand of hands) {
+    if (hand.handedness === targetHand) {
+      return countExtendedFingers(hand.keypoints);
+    }
+  }
+  return -1;
+}
+
+let exportDirHandle = null;
+
+async function getExportDir() {
+  if (exportDirHandle) return exportDirHandle;
+  try {
+    exportDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+  } catch {
+    return null;
+  }
+  return exportDirHandle;
+}
+
+async function exportKey() {
+  const data = {
+    nome: 'chiave-mappatura',
+    data: new Date().toISOString().split('T')[0],
+    mappatura: {}
+  };
+  for (let i = 0; i < 10; i++) {
+    const entry = touchPattern[i];
+    if (entry !== undefined) {
+      data.mappatura[i.toString()] = {
+        hand: entry.hand,
+        dita_estese: entry.count
+      };
+    }
+  }
+  const content = JSON.stringify(data, null, 2);
+  const dir = await getExportDir();
+  if (dir) {
+    const fileHandle = await dir.getFileHandle('chiave-mappatura.json', { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(content);
+    await writable.close();
+  } else {
+    const blob = new Blob([content], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chiave-mappatura.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+}
+
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top) * scaleY;
+  if (isExportClick(mx, my)) {
+    exportKey();
+    return;
+  }
+  if (allRegistered) return;
+  const num = getClickedNumber(mx, my);
+  if (num !== null && touchPattern[num] === undefined && !recordingState && canRegister(num)) {
+    const hand = phase === 'left' ? 'Left' : 'Right';
+    recordingState = { number: num, hand, countdown: 3, timer: 0 };
+  }
+});
+
+function render(hands) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawSkeleton(hands);
+  drawNumberTable();
+  drawPhaseIndicator();
+  drawCountdown();
+  drawExportButton();
+  const camX = canvas.width - CAM_PREVIEW_W - CAM_MARGIN;
+  const camY = CAM_MARGIN;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(camX, camY, CAM_PREVIEW_W, CAM_PREVIEW_H);
+  ctx.clip();
+  ctx.translate(camX + CAM_PREVIEW_W, camY);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, 0, 0, CAM_PREVIEW_W, CAM_PREVIEW_H);
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(camX, camY, CAM_PREVIEW_W, CAM_PREVIEW_H);
+}
+
+async function detectLoop(timestamp) {
+  const deltaSec = lastTimestamp ? (timestamp - lastTimestamp) / 1000 : 0.016;
+  lastTimestamp = timestamp;
+  try {
+    const hands = await detector.estimateHands(video, { flipHorizontal: true });
+    if (recordingState) {
+      recordingState.timer += deltaSec;
+      recordingState.countdown = Math.ceil(3 - recordingState.timer);
+      if (recordingState.timer >= 3) {
+        const count = getHandCount(hands, recordingState.hand);
+        touchPattern[recordingState.number] = { hand: recordingState.hand, count };
+        recordingState = null;
+        const leftDone = LEFT_DIGITS.every(d => touchPattern[d] !== undefined);
+        const rightDone = RIGHT_DIGITS.every(d => touchPattern[d] !== undefined);
+        if (leftDone && phase === 'left') {
+          phase = 'right';
+          currentHand = 'Right';
+        } else if (rightDone && phase === 'right') {
+          phase = 'done';
+        }
+        allRegistered = Object.keys(touchPattern).length === 10;
+      }
+    } else {
+      recognizedNumber = null;
+      for (const [num, entry] of Object.entries(touchPattern)) {
+        const count = getHandCount(hands, entry.hand);
+        if (count >= 0 && count === entry.count) {
+          recognizedNumber = parseInt(num);
+          break;
+        }
+      }
+    }
+    render(hands);
+  } catch (err) {
+    console.error('Detection error:', err);
+  }
+  requestAnimationFrame(detectLoop);
+}
+
+async function main() {
+  await startCamera();
+  await initDetector();
+  detectLoop();
+}
+
+main();
+</script>
+</body>
+</html>

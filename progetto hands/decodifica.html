@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decodifica Messaggio</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+  body { display: flex; align-items: center; justify-content: center; flex-direction: column; font-family: monospace; }
+  #drop-area {
+    border: 2px dashed #555;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    color: #888;
+    font-size: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    max-width: 500px;
+  }
+  #drop-area:hover { border-color: #aaa; color: #fff; }
+  #drop-area.dragover { border-color: #0cf; color: #0cf; }
+  #drop-area.hidden { display: none; }
+  #drop-area small { display: block; margin-top: 8px; font-size: 12px; color: #555; }
+  #key-status, #msg-status { margin-top: 8px; font-size: 13px; }
+  .ok { color: #44ff44; }
+  .err { color: #ff4444; }
+  #result { display: none; text-align: center; }
+  #result .label { color: #888; font-size: 16px; margin-bottom: 24px; }
+  #result .digits { color: #fff; font-size: 56px; font-weight: bold; word-break: break-all; letter-spacing: 8px; }
+  #result .info { color: #555; font-size: 12px; margin-top: 16px; }
+  #files { display: none; }
+</style>
+</head>
+<body>
+
+<div id="drop-area">
+  Trascina qui chiave e messaggio, o clicca per selezionarli
+  <small>Seleziona prima <strong>chiave-mappatura.json</strong> e poi <strong>messaggio-crittato.json</strong></small>
+</div>
+<input type="file" id="files" accept=".json" multiple>
+
+<div id="key-status"></div>
+<div id="msg-status"></div>
+
+<div id="result">
+  <div class="label">Ecco il tuo messaggio segreto</div>
+  <div class="digits" id="msg-text"></div>
+  <div class="info" id="msg-info"></div>
+</div>
+
+<script>
+"use strict";
+
+const dropArea = document.getElementById('drop-area');
+const fileInput = document.getElementById('files');
+const keyStatus = document.getElementById('key-status');
+const msgStatus = document.getElementById('msg-status');
+const resultDiv = document.getElementById('result');
+const msgText = document.getElementById('msg-text');
+const msgInfo = document.getElementById('msg-info');
+
+let loadedKey = null;
+let loadedMsg = null;
+
+function resetUI() {
+  keyStatus.textContent = '';
+  keyStatus.className = '';
+  msgStatus.textContent = '';
+  msgStatus.className = '';
+  resultDiv.style.display = 'none';
+}
+
+function setKeyStatus(text, ok) {
+  keyStatus.textContent = text;
+  keyStatus.className = ok ? 'ok' : 'err';
+}
+
+function setMsgStatus(text, ok) {
+  msgStatus.textContent = text;
+  msgStatus.className = ok ? 'ok' : 'err';
+}
+
+function tryDecode() {
+  if (!loadedKey || !loadedMsg) return;
+
+  // Validate: check key covers all digits in message
+  const digits = loadedMsg.cifre || [];
+  const unknown = digits.filter(d => loadedKey.mappatura[d.toString()] === undefined);
+  if (unknown.length > 0) {
+    setMsgStatus(`Attenzione: ${unknown.length} cifra/e non presenti nella chiave`, false);
+  }
+
+  // Show result
+  const text = digits.join(' ');
+  msgText.textContent = text.length > 0 ? text : '(vuoto)';
+  msgInfo.textContent = `${digits.length} cifre | chiave: ${loadedKey.nome || 'sconosciuta'}`;
+  resultDiv.style.display = 'block';
+  dropArea.classList.add('hidden');
+  dropArea.style.display = 'none';
+}
+
+function validateKey(data) {
+  if (!data || !data.mappatura) return 'Manca "mappatura"';
+  const entries = Object.entries(data.mappatura);
+  if (entries.length !== 10) return 'Servono 10 cifre (0-9)';
+  for (let i = 0; i < 10; i++) {
+    const entry = data.mappatura[i.toString()];
+    if (!entry) return `Manca cifra ${i}`;
+    if (entry.hand !== 'Left' && entry.hand !== 'Right') return `Cifra ${i}: hand deve essere Left o Right`;
+    if (!Number.isInteger(entry.dita_estese) || entry.dita_estese < 0 || entry.dita_estese > 4) return `Cifra ${i}: dita_estese deve essere 0-4`;
+  }
+  return null;
+}
+
+function validateMsg(data) {
+  if (!data || !data.cifre) return 'Manca "cifre"';
+  if (!Array.isArray(data.cifre)) return '"cifre" deve essere un array';
+  for (const d of data.cifre) {
+    if (!Number.isInteger(d) || d < 0 || d > 9) return `Cifra non valida: ${d}`;
+  }
+  return null;
+}
+
+function handleFiles(files) {
+  let pending = files.length;
+
+  for (const file of files) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+
+        if (data.mappatura) {
+          const err = validateKey(data);
+          if (err) {
+            setKeyStatus(`✗ ${file.name}: ${err}`, false);
+            return;
+          }
+          loadedKey = data;
+          setKeyStatus(`✓ ${file.name} caricata`, true);
+        } else if (data.cifre) {
+          const err = validateMsg(data);
+          if (err) {
+            setMsgStatus(`✗ ${file.name}: ${err}`, false);
+            return;
+          }
+          loadedMsg = data;
+          setMsgStatus(`✓ ${file.name} caricato (${data.cifre.length} cifre)`, true);
+        } else {
+          setMsgStatus(`✗ ${file.name}: formato sconosciuto`, false);
+        }
+      } catch (err) {
+        setMsgStatus(`✗ ${file.name}: JSON non valido`, false);
+      }
+
+      if (loadedKey && loadedMsg) {
+        tryDecode();
+      }
+    };
+    reader.readAsText(file);
+  }
+}
+
+dropArea.addEventListener('click', () => fileInput.click());
+
+dropArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropArea.classList.add('dragover');
+});
+
+dropArea.addEventListener('dragleave', () => {
+  dropArea.classList.remove('dragover');
+});
+
+dropArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropArea.classList.remove('dragover');
+  if (e.dataTransfer.files.length > 0) {
+    loadedKey = null;
+    loadedMsg = null;
+    resultDiv.style.display = 'none';
+    keyStatus.textContent = '';
+    keyStatus.className = '';
+    msgStatus.textContent = '';
+    msgStatus.className = '';
+    handleFiles(e.dataTransfer.files);
+  }
+});
+
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length > 0) {
+    handleFiles(e.target.files);
+  }
+});
+</script>
+</body>
+</html>

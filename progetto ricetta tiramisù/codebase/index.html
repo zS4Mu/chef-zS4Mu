@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ricetta Tiramisù — Chef Sasso</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+    <h1>Ricetta Tiramisù</h1>
+    <p class="chef">di <strong>Chef Sasso</strong></p>
+    <p class="subtitle">Il tiramisù classico fatto in casa, passo dopo passo.</p>
+</header>
+
+<main class="container">
+    <section class="ingredients-section">
+        <h2>Ingredienti</h2>
+        <div class="servings-control">
+            <label for="servings-slider">Porzioni:</label>
+            <input type="range" id="servings-slider" min="2" max="20" value="6">
+            <span id="servings-display">6</span>
+        </div>
+        <ul id="ingredients-list">
+            <li data-base="1000" data-unit="g" data-label="Mascarpone">1000 g di Mascarpone</li>
+            <li data-base="8" data-unit="" data-label="Uova" data-round="ceil">8 uova</li>
+            <li data-base="350" data-unit="g" data-label="Savoiardi">350 g di savoiardi (circa 42 pezzi)</li>
+            <li data-base="200" data-unit="g" data-label="Zucchero">200 g di zucchero</li>
+            <li data-base="200" data-unit="g" data-label="Caffè">200 g di caffè</li>
+            <li data-base="0" data-unit="" data-label="Cacao">Cacao amaro in polvere q.b.</li>
+        </ul>
+    </section>
+
+    <section class="preparation-section">
+        <h2>Preparazione</h2>
+        <ol id="steps-list">
+            <li>
+                <label class="step-label">
+                    <input type="checkbox" class="step-checkbox" data-step="0">
+                    <span class="step-text"><strong>Preparare il caffè.</strong> Prendere la moka, svitarla e togliere il filtro. Riempire il contenitore dell'acqua fino alla valvola, chiudere con il filtro e riempirlo di caffè in polvere formando una montagnetta. Riavvitare la moka e posizionarla sul piano cottura. Accendere il gas e attendere che il caffè esca dal canale di uscita e la parte superiore si riempia. Spegnere il gas, versare il caffè in una ciotola di vetro larga e bassa e lasciarlo raffreddare.</span>
+                </label>
+            </li>
+            <li>
+                <label class="step-label">
+                    <input type="checkbox" class="step-checkbox" data-step="1">
+                    <span class="step-text"><strong>Preparare la crema.</strong> In una ciotola di vetro, separare i tuorli dagli albumi. Aggiungere 100 g di zucchero ai tuorli e montare con una frusta elettrica fino a ottenere una consistenza liscia e giallina. Aggiungere il mascarpone con una marisa e montare ancora per 1 minuto.</span>
+                </label>
+            </li>
+            <li>
+                <label class="step-label">
+                    <input type="checkbox" class="step-checkbox" data-step="2">
+                    <span class="step-text"><strong>Montare gli albumi.</strong> Montare gli albumi con la frusta elettrica finché non diventano bianco neve e voluminosi.</span>
+                </label>
+            </li>
+            <li>
+                <label class="step-label">
+                    <input type="checkbox" class="step-checkbox" data-step="3">
+                    <span class="step-text"><strong>Unire.</strong> Aggiungere gli albumi montati alla crema di uova e mascarpone e amalgamare delicatamente.</span>
+                </label>
+            </li>
+            <li>
+                <label class="step-label">
+                    <input type="checkbox" class="step-checkbox" data-step="4">
+                    <span class="step-text"><strong>Comporre il tiramisù.</strong> Prendere una pirofila rettangolare e spalmare un cucchiaio di crema sul fondo. Aggiungere lo zucchero rimasto al caffè e mescolare. Inzuppare i savoiardi nel caffè uno alla volta e disporli nella pirofila, coprendo tutta la superficie. Coprire con uno strato di crema. Spolverare con cacao amaro usando un colino.</span>
+                </label>
+            </li>
+            <li>
+                <label class="step-label">
+                    <input type="checkbox" class="step-checkbox" data-step="5">
+                    <span class="step-text"><strong>Riposo in frigorifero.</strong> Coprire la pirofila con pellicola trasparente senza toccare il tiramisù e lasciare riposare in frigorifero per una notte.</span>
+                </label>
+            </li>
+            <li>
+                <label class="step-label">
+                    <input type="checkbox" class="step-checkbox" data-step="6">
+                    <span class="step-text"><strong>Servire.</strong> Il giorno dopo è pronto per essere mangiato.</span>
+                </label>
+            </li>
+        </ol>
+        <button id="reset-checklist" class="btn-reset">Reset checklist</button>
+    </section>
+</main>
+
+<footer class="footer">
+    <p>Ricetta di Chef Sasso</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
