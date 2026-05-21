@@ -128,8 +128,8 @@ function initHeroAnimation() {
     var elapsed = (time - startTime) / 1000;
     for (var i = 0; i < items.length; i++) {
       var it = items[i];
-      var n = noise1D(elapsed * 0.3 + it.phase * 10);
-      var s = 1 + 0.12 * n;
+      var n = noise1D(elapsed * 0.8 + it.phase * 10);
+      var s = 1 + 0.3 * n;
       it.g.setAttribute('transform',
         'translate(' + it.cx + ',' + it.cy + ') scale(' + s + ') translate(' + (-it.cx) + ',' + (-it.cy) + ')');
     }

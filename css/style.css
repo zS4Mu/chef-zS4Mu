@@ -14,8 +14,9 @@
 :root {
   --hero-blur: 30px;
   --hero-line-height: 0.85;
-  --pattern-fg: #ffffff;
-  --pattern-bg: #1d1d1b;
+  --hero-opacity: 0.5;
+  --pattern-fg: #95ff00;
+  --pattern-bg: #2000ef;
 }
 
 html {
@@ -34,9 +35,9 @@ body {
 
 h1 {
   font-family: 'Thunder-VF', sans-serif;
-  font-size: 3.5rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-size: 5rem;
+  font-weight: 900;
+  letter-spacing: 0.01em; 
 }
 
 h2 {
@@ -85,15 +86,15 @@ button {
 /* --- Hero --- */
 .hero {
   position: relative;
-  min-height: 900px;
+  min-height: 600px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   overflow: hidden;
-  padding: 4rem 2rem;
-  color: #FFFFFF;
+  padding: 10rem;
+  color: #e40101;
 }
 
 .hero-pattern-bg {
@@ -103,6 +104,9 @@ button {
   height: 100%;
   overflow: hidden;
   pointer-events: none;
+  opacity: var(--hero-opacity);
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
 
 .hero-pattern-bg svg {
@@ -114,23 +118,24 @@ button {
 
 .hero h1 {
   font-family: 'Thunder-VF', sans-serif;
-  font-size: clamp(6rem, 12vw, 18rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: #FFFFFF;
+  font-size: 34rem;  
+  font-weight: 900;
+  letter-spacing: 0.005em;
+  color: #ffffff;
   text-transform: uppercase;
   line-height: var(--hero-line-height);
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  mix-blend-mode: difference;
 }
 
 .hero-sub {
-  font-size: 1.7rem;
-  font-weight: 300;
-  color: rgba(255,255,255,0.7);
-  margin-top: 2rem;
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: #5A5A5A;
+  margin-top: 0.8rem;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 /* --- Mosaic grid --- */
