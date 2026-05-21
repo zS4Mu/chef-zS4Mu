@@ -188,7 +188,7 @@ function renderMosaic() {
 }
 
 
-function openProject(index) {
+function showProject(index) {
   const p = projects[index];
   currentProject = index;
   projectTitle.textContent = p.title;
@@ -209,13 +209,27 @@ function openProject(index) {
   projectView.scrollIntoView({ behavior: 'instant' });
 }
 
+function openProject(index) {
+  showProject(index);
+  history.pushState({ view: 'project', index: index }, '');
+}
+
 function closeProject() {
-  projectView.classList.add('hidden');
-  home.classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  history.back();
 }
 
 btnBack.addEventListener('click', closeProject);
+
+window.addEventListener('popstate', function (e) {
+  if (e.state && e.state.view === 'project') {
+    showProject(e.state.index);
+  } else {
+    projectView.classList.add('hidden');
+    home.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    currentProject = null;
+  }
+});
 
 btnTop.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
