@@ -12,11 +12,11 @@
 }
 
 :root {
-  --hero-blur: 30px;
+  --hero-blur: 20px;
   --hero-line-height: 0.85;
   --hero-opacity: 0.5;
-  --pattern-fg: #95ff00;
-  --pattern-bg: #2000ef;
+  --pattern-fg: #ef1119;
+  --pattern-bg: #97fb00;
 }
 
 html {
@@ -93,8 +93,9 @@ button {
   justify-content: center;
   text-align: center;
   overflow: hidden;
-  padding: 10rem;
-  color: #e40101;
+  padding: 8rem 2rem 4rem;
+  background: linear-gradient(to bottom, #575757 10%, #ffffff 100%);
+  color: #ffffff;
 }
 
 .hero-pattern-bg {
@@ -140,18 +141,66 @@ button {
 
 /* --- Mosaic grid --- */
 .mosaic {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: 2fr 1fr 0.6fr;
-  gap: 1.6rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  gap: 4px;
+}
+
+.mosaic-row {
+  display: flex;
+  width: 100%;
+  gap: 4px;
 }
 
 .mosaic-item {
   position: relative;
-  border-radius: 0.8rem;
+  overflow: hidden;
+  cursor: pointer;
+  background: #f0f0f0;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.mosaic-item:hover {
+  box-shadow: 0 8px 30px #A3FB00;
+}
+
+.mosaic-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mosaic-item .mosaic-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 600;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.mosaic-item .placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
+  color: #999;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.mosaic-item {
+  position: relative;
   overflow: hidden;
   cursor: pointer;
   background: #f0f0f0;
@@ -160,7 +209,7 @@ button {
 
 .mosaic-item:hover {
   transform: scale(1.02);
-  box-shadow: 0 8px 30px rgba(163, 251, 0, 0.3);
+  box-shadow: 0 8px 30px #A3FB00;
 }
 
 .mosaic-item img {
@@ -184,24 +233,38 @@ button {
 }
 
 .mosaic-item:nth-child(1) {
-  grid-column: 1 / 2;
-  grid-row: 1 / 3;
-  min-height: 400px;
+  width: 66%;
+  height: 600px;
 }
 
 .mosaic-item:nth-child(2) {
-  grid-column: 2 / 3;
-  grid-row: 1 / 2;
+  width: calc(34% - 0.4rem);
+  height: 600px;
 }
 
 .mosaic-item:nth-child(3) {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
+  width: 33%;
+  height: 300px;
 }
 
 .mosaic-item:nth-child(4) {
-  grid-column: 1 / 3;
-  grid-row: 3 / 4;
+  width: calc(67% - 0.4rem);
+  height: 600px;
+}
+
+.mosaic-item:nth-child(5) {
+  width: 100%;
+  height: 200px;
+}
+
+.mosaic-item:nth-child(6) {
+  width: 50%;
+  height: 400px;
+}
+
+.mosaic-item:nth-child(7) {
+  width: calc(50% - 0.4rem);
+  height: 700px;
 }
 
 /* --- Footer --- */
@@ -245,11 +308,11 @@ button {
 }
 
 .footer-top:hover {
-  background: #98EA00;
+  background: #A3FB00;
 }
 
 .footer-top:active {
-  background: #82FB00;
+  background: #A3FB00;
 }
 
 /* --- Project view --- */
@@ -316,15 +379,20 @@ button {
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
-  .mosaic {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
+  .mosaic-item {
+    width: 100% !important;
+    min-height: 250px;
   }
 
-  .mosaic-item:nth-child(1),
-  .mosaic-item:nth-child(2),
-  .mosaic-item:nth-child(3),
-  .mosaic-item:nth-child(4) {
+  .footer {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+    padding: 2rem;
+  }
+}
+
+  .mosaic-item {
     grid-column: auto;
     grid-row: auto;
     min-height: 250px;

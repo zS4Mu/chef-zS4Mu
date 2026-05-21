@@ -23,6 +23,24 @@ const projects = [
     path: 'progetto sound responsive/index.html',
     thumb: 'assets/thumbnails/sound-responsive.jpg',
   },
+  {
+    id: 'progetto5',
+    title: 'Nuovo Progetto',
+    path: '',
+    thumb: '',
+  },
+  {
+    id: 'progetto6',
+    title: 'Nuovo Progetto',
+    path: '',
+    thumb: '',
+  },
+  {
+    id: 'progetto7',
+    title: 'Nuovo Progetto',
+    path: '',
+    thumb: '',
+  },
 ];
 
 const home = document.getElementById('home');
@@ -35,34 +53,103 @@ const btnTop = document.getElementById('btn-top');
 
 let currentProject = null;
 
+const rowGroups = [
+  [0, 1],
+  [2, 3],
+  [4],
+  [5, 6],
+];
+
+const defaultSizes = [
+  { flex: 2, height: 600 },
+  { flex: 1, height: 600 },
+  { flex: 1, height: 300 },
+  { flex: 2, height: 600 },
+  { flex: 1, height: 200 },
+  { flex: 1, height: 400 },
+  { flex: 1, height: 700 },
+];
+
+let hoveredIndex = null;
+
+function createItemEl(p, itemIndex) {
+  const item = document.createElement('div');
+  item.className = 'mosaic-item';
+  item.dataset.index = itemIndex;
+  item.style.flex = defaultSizes[itemIndex].flex;
+  item.style.height = defaultSizes[itemIndex].height + 'px';
+
+  const img = new Image();
+  img.onload = () => {
+    item.innerHTML = '';
+    item.appendChild(img);
+    const label = document.createElement('div');
+    label.className = 'mosaic-label';
+    label.textContent = p.title;
+    item.appendChild(label);
+  };
+  img.onerror = () => {
+    item.innerHTML = '';
+    const placeholder = document.createElement('div');
+    placeholder.className = 'placeholder';
+    placeholder.textContent = p.title;
+    item.appendChild(placeholder);
+  };
+  img.src = p.thumb;
+  img.alt = p.title;
+
+  item.addEventListener('mouseenter', () => onItemHover(itemIndex));
+  item.addEventListener('mouseleave', onItemLeave);
+  item.addEventListener('click', () => openProject(itemIndex));
+
+  return item;
+}
+
 function renderMosaic() {
-  projects.forEach((p, i) => {
-    const item = document.createElement('div');
-    item.className = 'mosaic-item';
-    item.dataset.index = i;
-
-    const img = new Image();
-    img.onload = () => {
-      item.innerHTML = '';
-      item.appendChild(img);
-      const label = document.createElement('div');
-      label.className = 'mosaic-label';
-      label.textContent = p.title;
-      item.appendChild(label);
-    };
-    img.onerror = () => {
-      item.innerHTML = '';
-      const placeholder = document.createElement('div');
-      placeholder.className = 'placeholder';
-      placeholder.textContent = p.title;
-      item.appendChild(placeholder);
-    };
-    img.src = p.thumb;
-    img.alt = p.title;
-
-    item.addEventListener('click', () => openProject(i));
-    mosaicGrid.appendChild(item);
+  mosaicGrid.innerHTML = '';
+  rowGroups.forEach(row => {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'mosaic-row';
+    row.forEach(itemIndex => {
+      rowDiv.appendChild(createItemEl(projects[itemIndex], itemIndex));
+    });
+    mosaicGrid.appendChild(rowDiv);
   });
+}
+
+function onItemHover(index) {
+  hoveredIndex = index;
+  const rowIdx = rowGroups.findIndex(row => row.includes(index));
+  const row = rowGroups[rowIdx];
+  const rowDiv = mosaicGrid.children[rowIdx];
+  const items = rowDiv.children;
+
+  for (let i = 0; i < row.length; i++) {
+    const itemIdx = row[i];
+    if (itemIdx === index) {
+      items[i].style.flex = 2;
+      items[i].style.height = Math.round(defaultSizes[itemIdx].height * 1.5) + 'px';
+    } else {
+      items[i].style.flex = 1;
+      items[i].style.height = Math.round(defaultSizes[itemIdx].height * 0.75) + 'px';
+    }
+  }
+}
+
+function onItemLeave() {
+  if (hoveredIndex === null) return;
+  const prevRowIdx = rowGroups.findIndex(row => row.includes(hoveredIndex));
+  const prevRow = rowGroups[prevRowIdx];
+  const prevRowDiv = mosaicGrid.children[prevRowIdx];
+  const prevItems = prevRowDiv.children;
+
+  for (let i = 0; i < prevRow.length; i++) {
+    const itemIdx = prevRow[i];
+    prevItems[i].style.flex = defaultSizes[itemIdx].flex;
+    prevItems[i].style.height = defaultSizes[itemIdx].height + 'px';
+  }
+
+  hoveredIndex = null;
 }
 
 function openProject(index) {
@@ -71,11 +158,15 @@ function openProject(index) {
   projectTitle.textContent = p.title;
 
   projectContent.innerHTML = '';
-  const iframe = document.createElement('iframe');
-  iframe.src = p.path;
-  iframe.title = p.title;
-  iframe.setAttribute('allow', 'camera *; microphone *');
-  projectContent.appendChild(iframe);
+  if (p.path) {
+    const iframe = document.createElement('iframe');
+    iframe.src = p.path;
+    iframe.title = p.title;
+    iframe.setAttribute('allow', 'camera *; microphone *');
+    projectContent.appendChild(iframe);
+  } else {
+    projectContent.innerHTML = '<p style="padding:2rem;font-size:1.7rem;color:#999;">Progetto in arrivo...</p>';
+  }
 
   home.classList.add('hidden');
   projectView.classList.remove('hidden');
