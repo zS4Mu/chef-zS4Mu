@@ -51,6 +51,7 @@ const mosaicGrid = document.getElementById('mosaic-grid');
 const btnBack = document.getElementById('btn-back');
 const btnTop = document.getElementById('btn-top');
 
+let hoveredIndex = null;
 let currentProject = null;
 
 const rowGroups = [
@@ -70,7 +71,6 @@ const defaultSizes = [
   { flex: 1, height: 700 },
 ];
 
-let hoveredIndex = null;
 
 function createItemEl(p, itemIndex) {
   const item = document.createElement('div');
@@ -79,42 +79,37 @@ function createItemEl(p, itemIndex) {
   item.style.flex = defaultSizes[itemIndex].flex;
   item.style.height = defaultSizes[itemIndex].height + 'px';
 
-  const img = new Image();
-  img.onload = () => {
-    item.innerHTML = '';
-    item.appendChild(img);
-    const label = document.createElement('div');
-    label.className = 'mosaic-label';
-    label.textContent = p.title;
-    item.appendChild(label);
-  };
-  img.onerror = () => {
-    item.innerHTML = '';
-    const placeholder = document.createElement('div');
-    placeholder.className = 'placeholder';
-    placeholder.textContent = p.title;
-    item.appendChild(placeholder);
-  };
-  img.src = p.thumb;
-  img.alt = p.title;
-
   item.addEventListener('mouseenter', () => onItemHover(itemIndex));
   item.addEventListener('mouseleave', onItemLeave);
   item.addEventListener('click', () => openProject(itemIndex));
 
-  return item;
-}
+  if (p.thumb) {
+    const img = new Image();
+    img.onload = () => {
+      item.innerHTML = '';
+      item.appendChild(img);
+      const label = document.createElement('div');
+      label.className = 'mosaic-label';
+      label.textContent = p.title;
+      item.appendChild(label);
+    };
+    img.onerror = () => {
+      item.innerHTML = '';
+      const ph = document.createElement('div');
+      ph.className = 'placeholder';
+      ph.textContent = p.title;
+      item.appendChild(ph);
+    };
+    img.src = p.thumb;
+    img.alt = p.title;
+  } else {
+    const ph = document.createElement('div');
+    ph.className = 'placeholder';
+    ph.textContent = p.title;
+    item.appendChild(ph);
+  }
 
-function renderMosaic() {
-  mosaicGrid.innerHTML = '';
-  rowGroups.forEach(row => {
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'mosaic-row';
-    row.forEach(itemIndex => {
-      rowDiv.appendChild(createItemEl(projects[itemIndex], itemIndex));
-    });
-    mosaicGrid.appendChild(rowDiv);
-  });
+  return item;
 }
 
 function onItemHover(index) {
@@ -151,6 +146,47 @@ function onItemLeave() {
 
   hoveredIndex = null;
 }
+
+function renderMosaic() {
+  mosaicGrid.innerHTML = '';
+  rowGroups.forEach(row => {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'mosaic-row';
+
+    let maxH = 0;
+    const items = [];
+    row.forEach(itemIndex => {
+      const el = createItemEl(projects[itemIndex], itemIndex);
+      rowDiv.appendChild(el);
+      items.push(el);
+      maxH = Math.max(maxH, defaultSizes[itemIndex].height);
+    });
+    const totalFlex = row.reduce((s, i) => s + defaultSizes[i].flex, 0);
+    let leftPct = 0;
+    row.forEach((itemIndex, i) => {
+      const wPct = (defaultSizes[itemIndex].flex / totalFlex) * 100;
+      const gapH = maxH - defaultSizes[itemIndex].height;
+      if (gapH > 0) {
+        const gt = document.createElement('div');
+        gt.className = 'row-gap-text';
+        gt.style.left = leftPct + '%';
+        gt.style.width = wPct + '%';
+        gt.style.height = gapH + 'px';
+        const h2 = document.createElement('h2');
+        h2.textContent = 'Titolo segnaposto';
+        const p = document.createElement('p');
+        p.textContent = 'Contenuto in arrivo.';
+        gt.appendChild(h2);
+        gt.appendChild(p);
+        rowDiv.appendChild(gt);
+      }
+      leftPct += wPct;
+    });
+
+    mosaicGrid.appendChild(rowDiv);
+  });
+}
+
 
 function openProject(index) {
   const p = projects[index];
