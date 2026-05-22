@@ -241,17 +241,22 @@ btnTop.addEventListener('click', () => {
 });
 
 function initHeroAnimation() {
-  var cellsG = document.getElementById('cells');
-  if (!cellsG) return;
-  var items = Array.from(cellsG.querySelectorAll('path')).map(function(p) {
-    var bb = p.getBBox();
-    var cx = bb.x + bb.width / 2;
-    var cy = bb.y + bb.height / 2;
-    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    p.parentNode.insertBefore(g, p);
-    g.appendChild(p);
-    return { g: g, cx: cx, cy: cy, phase: Math.random() * Math.PI * 2 };
+  var allItems = [];
+  ['cells', 'sub-cells'].forEach(function(groupId) {
+    var cellsG = document.getElementById(groupId);
+    if (!cellsG) return;
+    var items = Array.from(cellsG.querySelectorAll('path')).map(function(p) {
+      var bb = p.getBBox();
+      var cx = bb.x + bb.width / 2;
+      var cy = bb.y + bb.height / 2;
+      var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      p.parentNode.insertBefore(g, p);
+      g.appendChild(p);
+      return { g: g, cx: cx, cy: cy, phase: Math.random() * Math.PI * 2 };
+    });
+    allItems = allItems.concat(items);
   });
+  if (allItems.length === 0) return;
   var p = [];
   for (var i = 0; i < 256; i++) p[i] = i;
   for (var i = 255; i > 0; i--) {
@@ -272,8 +277,8 @@ function initHeroAnimation() {
   function animate(time) {
     if (!startTime) startTime = time;
     var elapsed = (time - startTime) / 1000;
-    for (var i = 0; i < items.length; i++) {
-      var it = items[i];
+    for (var i = 0; i < allItems.length; i++) {
+      var it = allItems[i];
       var n = noise1D(elapsed * 0.8 + it.phase * 10);
       var s = 1 + 0.3 * n;
       it.g.setAttribute('transform',
