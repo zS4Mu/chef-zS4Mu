@@ -1,21 +1,21 @@
 const projects = [
   {
-    id: 'hands',
-    title: 'Hands',
-    path: 'progetto hands/index.html',
-    thumb: 'assets/thumbnails/hands.jpg',
+    id: 'placeholder1',
+    title: 'Nuovo Progetto',
+    path: '',
+    thumb: '',
   },
   {
     id: 'pattern',
     title: 'Pattern',
     path: 'progetto pattern/index.html',
-    thumb: 'assets/thumbnails/pattern.jpg',
+    thumb: 'assets/thumbnails/pattern.png',
   },
   {
     id: 'tiramisu',
     title: 'Ricetta Tiramisù',
     path: 'progetto ricetta tiramisù 2/index.html',
-    thumb: 'assets/thumbnails/tiramisu.jpg',
+    thumb: 'assets/thumbnails/tiramisu.png',
   },
   {
     id: 'sound',
@@ -24,22 +24,22 @@ const projects = [
     thumb: 'assets/thumbnails/sound-responsive.png',
   },
   {
-    id: 'progetto5',
-    title: 'Nuovo Progetto',
-    path: '',
-    thumb: '',
+    id: 'mappatura',
+    title: 'Mappatura',
+    path: 'progetto hands/mappatura.html',
+    thumb: 'assets/thumbnails/mappatura.png',
   },
   {
-    id: 'progetto6',
-    title: 'Nuovo Progetto',
-    path: '',
-    thumb: '',
+    id: 'lettura',
+    title: 'Lettura',
+    path: 'progetto hands/lettura.html',
+    thumb: 'assets/thumbnails/lettura.png',
   },
   {
-    id: 'progetto7',
-    title: 'Nuovo Progetto',
-    path: '',
-    thumb: '',
+    id: 'scrittura',
+    title: 'Scrittura',
+    path: 'progetto hands/scrittura.html',
+    thumb: 'assets/thumbnails/scrittura.png',
   },
 ];
 
@@ -64,8 +64,8 @@ const rowGroups = [
 const defaultSizes = [
   { flex: 2, height: 600 },
   { flex: 1, height: 600 },
-  { flex: 1, height: 300 },
-  { flex: 2, height: 600 },
+  { flex: 1.5, height: 600 },
+  { flex: 1.5, height: 600 },
   { flex: 1, height: 200 },
   { flex: 1, height: 400 },
   { flex: 1, height: 700 },
@@ -210,6 +210,7 @@ function showProject(index) {
   home.classList.add('hidden');
   projectView.classList.remove('hidden');
   projectView.scrollIntoView({ behavior: 'instant' });
+  localStorage.setItem('currentProject', index);
 }
 
 function openProject(index) {
@@ -231,6 +232,7 @@ window.addEventListener('popstate', function (e) {
     home.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'instant' });
     currentProject = null;
+    localStorage.removeItem('currentProject');
   }
 });
 
@@ -284,3 +286,12 @@ function initHeroAnimation() {
 
 renderMosaic();
 initHeroAnimation();
+
+var savedIndex = localStorage.getItem('currentProject');
+if (savedIndex !== null) {
+  var idx = parseInt(savedIndex, 10);
+  if (projects[idx] && projects[idx].path) {
+    history.replaceState({ view: 'project', index: idx }, '');
+    showProject(idx);
+  }
+}

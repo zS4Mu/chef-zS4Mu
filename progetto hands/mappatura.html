@@ -4,14 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mappatura Cifre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'DM Sans', sans-serif; }
   canvas { display: block; width: 100%; height: 100%; }
   #error-overlay {
     position: fixed; inset: 0; display: none;
     align-items: center; justify-content: center;
-    color: white; font: 18px monospace; background: #000;
+    color: white; font: 18px 'DM Sans', sans-serif; background: #000;
     z-index: 10;
   }
   #error-overlay.visible { display: flex; }
@@ -36,8 +39,8 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const errorOverlay = document.getElementById('error-overlay');
 
-const CAM_PREVIEW_W = 240;
-const CAM_PREVIEW_H = 180;
+const CAM_PREVIEW_W = 360;
+const CAM_PREVIEW_H = 270;
 const CAM_MARGIN = 16;
 const EXTEND_THRESHOLD = 0.7; // cos(angle) — 1 = straight, 0 = 90° bent
 
@@ -133,7 +136,7 @@ function countExtendedFingers(keypoints) {
 }
 
 function drawLabel(x, y, text, color) {
-  ctx.font = '14px monospace';
+  ctx.font = '300 14px DM Sans, sans-serif';
   ctx.fillStyle = color;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -158,15 +161,7 @@ function drawSkeleton(hands) {
         drawLine(kp[i].x, kp[i].y, kp[j].x, kp[j].y, colors.stroke);
       }
     }
-    for (const point of kp) {
-      const label = LABELS[point.name];
-      if (label) {
-        drawLabel(point.x, point.y, label, colors.label);
-      }
-    }
-    if (kp[0]) {
-      drawLabel(kp[0].x + 20, kp[0].y - 20, colors.tag, colors.label);
-    }
+
   }
 }
 
@@ -195,14 +190,14 @@ function drawNumberTable() {
     const y = origin.y + row * (CELL_SIZE + CELL_GAP);
     let color = '#333';
     if (recognizedNumber === i) {
-      color = '#00ccff';
+      color = '#A3FB00';
     } else if (touchPattern[i] !== undefined) {
-      color = '#fff';
+      color = '#A3FB00';
     } else if (canRegister(i)) {
       color = '#555';
     }
     ctx.fillStyle = color;
-    ctx.font = '24px monospace';
+    ctx.font = '500 24px DM Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(i.toString(), x + CELL_SIZE / 2, y + CELL_SIZE / 2);
@@ -211,8 +206,8 @@ function drawNumberTable() {
 
 function drawPhaseIndicator() {
   const text = phase === 'left' ? 'MANO SINISTRA (0-4)' : phase === 'right' ? 'MANO DESTRA (5-9)' : 'COMPLETATO';
-  ctx.font = '20px monospace';
-  ctx.fillStyle = '#888';
+  ctx.font = '500 20px DM Sans, sans-serif';
+  ctx.fillStyle = '#666';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   ctx.fillText(text, canvas.width / 2, 170);
@@ -234,7 +229,7 @@ function getClickedNumber(mx, my) {
 
 function drawCountdown() {
   if (!recordingState) return;
-  ctx.font = '36px monospace';
+  ctx.font = '500 36px DM Sans, sans-serif';
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -245,11 +240,20 @@ function drawExportButton() {
   const bw = 240, bh = 50;
   const bx = (canvas.width - bw) / 2;
   const by = canvas.height - 80;
-  ctx.fillStyle = allRegistered ? '#fff' : '#333';
-  ctx.font = '20px monospace';
+  const enabled = allRegistered;
+  const over = enabled && mouseX >= bx && mouseX <= bx + bw && mouseY >= by && mouseY <= by + bh;
+  if (over) {
+    ctx.fillStyle = '#A3FB00';
+    ctx.fillRect(bx, by, bw, bh);
+  }
+  ctx.strokeStyle = over ? '#A3FB00' : (enabled ? '#A3FB00' : '#444');
+  ctx.lineWidth = 1;
+  ctx.strokeRect(bx, by, bw, bh);
+  ctx.fillStyle = over ? '#000' : (enabled ? '#A3FB00' : '#444');
+  ctx.font = '500 20px DM Sans, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(allRegistered ? 'EXPORT KEY' : 'Registra 0-9 per sbloccare', canvas.width / 2, by + bh / 2);
+  ctx.fillText(enabled ? 'Export Key' : 'Registra 0-9', canvas.width / 2, by + bh / 2);
 }
 
 function isExportClick(mx, my) {
@@ -279,6 +283,7 @@ function getHandCount(hands, targetHand) {
 }
 
 let exportDirHandle = null;
+let mouseX = -1, mouseY = -1;
 
 async function getExportDir() {
   if (exportDirHandle) return exportDirHandle;
@@ -322,6 +327,17 @@ async function exportKey() {
     URL.revokeObjectURL(url);
   }
 }
+
+canvas.addEventListener('mousemove', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+  mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+});
+
+canvas.addEventListener('mouseleave', () => {
+  mouseX = -1;
+  mouseY = -1;
+});
 
 canvas.addEventListener('click', (e) => {
   const rect = canvas.getBoundingClientRect();

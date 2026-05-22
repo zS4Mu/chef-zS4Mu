@@ -188,6 +188,13 @@ button {
   transform: scale(1);
 }
 
+.mosaic-row:nth-child(2) .mosaic-item:nth-child(1) img,
+.mosaic-row:nth-child(3) .mosaic-item img,
+.mosaic-row:nth-child(4) .mosaic-item img {
+  transform: scale(1.2);
+  object-position: center;
+}
+
 .mosaic-item .mosaic-label {
   position: absolute;
   inset: 0;
@@ -201,6 +208,9 @@ button {
   text-transform: uppercase;
   mix-blend-mode: difference;
   pointer-events: none;
+  padding: 2rem;
+  text-align: center;
+  line-height: 0.96;
 }
 
 .mosaic-item .placeholder {
