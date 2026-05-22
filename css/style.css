@@ -177,6 +177,7 @@ button {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
   filter: blur(6px);
   transform: scale(3);
@@ -186,13 +187,6 @@ button {
 .mosaic-item:hover img {
   filter: blur(0);
   transform: scale(1);
-}
-
-.mosaic-row:nth-child(2) .mosaic-item:nth-child(1) img,
-.mosaic-row:nth-child(3) .mosaic-item img,
-.mosaic-row:nth-child(4) .mosaic-item img {
-  transform: scale(1.2);
-  object-position: center;
 }
 
 .mosaic-item .mosaic-label {

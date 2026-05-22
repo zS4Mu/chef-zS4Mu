@@ -1,9 +1,9 @@
 const projects = [
   {
-    id: 'placeholder1',
-    title: 'Nuovo Progetto',
-    path: '',
-    thumb: '',
+    id: 'parola',
+    title: 'Parola',
+    path: 'progetto parola/index.html',
+    thumb: 'assets/thumbnails/parola.png',
   },
   {
     id: 'pattern',
@@ -237,7 +237,20 @@ window.addEventListener('popstate', function (e) {
 });
 
 btnTop.addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const start = window.pageYOffset;
+  const duration = 800;
+  let startTime = null;
+  function customEase(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+  function scroll(time) {
+    if (!startTime) startTime = time;
+    const elapsed = time - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    window.scrollTo(0, start * (1 - customEase(progress)));
+    if (progress < 1) requestAnimationFrame(scroll);
+  }
+  requestAnimationFrame(scroll);
 });
 
 function initHeroAnimation() {
