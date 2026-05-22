@@ -64,7 +64,7 @@ const rowGroups = [
 const defaultSizes = [
   { flex: 2, height: 600 },
   { flex: 1, height: 600 },
-  { flex: 1.5, height: 600 },
+  { flex: 1.5, height: 450 },
   { flex: 1.5, height: 600 },
   { flex: 1, height: 200 },
   { flex: 1, height: 400 },
