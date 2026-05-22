@@ -207,9 +207,9 @@ function showProject(index) {
     projectContent.innerHTML = '<p style="padding:2rem;font-size:1.7rem;color:#999;">Progetto in arrivo...</p>';
   }
 
-  home.classList.add('hidden');
-  projectView.classList.remove('hidden');
-  projectView.scrollIntoView({ behavior: 'instant' });
+  document.body.style.overflow = 'hidden';
+  projectView.classList.add('open');
+  projectView.scrollTop = 0;
   localStorage.setItem('currentProject', index);
 }
 
@@ -228,9 +228,8 @@ window.addEventListener('popstate', function (e) {
   if (e.state && e.state.view === 'project') {
     showProject(e.state.index);
   } else {
-    projectView.classList.add('hidden');
-    home.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = '';
+    projectView.classList.remove('open');
     currentProject = null;
     localStorage.removeItem('currentProject');
   }
