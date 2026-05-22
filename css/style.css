@@ -225,7 +225,9 @@ button {
 .row-gap-text h2 {
   font-family: 'DM Sans', sans-serif;
   font-weight: 700;
-  font-size: 1.8rem;
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
   margin: 0 0 0.4rem;
   color: #000;
 }
@@ -233,8 +235,9 @@ button {
 .row-gap-text p {
   font-family: 'DM Sans', sans-serif;
   font-weight: 300;
-  font-size: 1.2rem;
-  line-height: 1.5;
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
   margin: 0;
   color: #000;
 }
