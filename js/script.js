@@ -1,9 +1,9 @@
 const projects = [
   {
-    id: 'placeholder1',
-    title: 'Nuovo Progetto',
-    path: '',
-    thumb: '',
+    id: 'parola',
+    title: 'Parola',
+    path: 'progetto parola/index.html',
+    thumb: 'assets/thumbnails/parola.png',
   },
   {
     id: 'pattern',

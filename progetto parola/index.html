@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parola Illuminata</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="scene">
+    <div class="orbit-path"></div>
+    <div class="sun"></div>
+    <div class="word" id="word">scrivi qui...</div>
+  </div>
+  <div class="controls">
+    <div class="control-group">
+      <label class="control-label">Parola</label>
+      <input type="text" id="wordInput" class="control-input" value="" placeholder="Scrivi una parola...">
+    </div>
+    <div class="control-group">
+      <label class="control-label">Font</label>
+      <select id="fontSelect" class="control-select">
+        <option value="IBM Plex Sans">IBM Plex Sans</option>
+        <option value="Orbitron">Orbitron</option>
+        <option value="Playfair Display">Playfair Display</option>
+        <option value="Monoton">Monoton</option>
+        <option value="Rubik Dirt">Rubik Dirt</option>
+        <option value="Major Mono Display">Major Mono Display</option>
+        <option value="Bangers">Bangers</option>
+        <option value="Press Start 2P">Press Start 2P</option>
+        <option value="WindSong">WindSong</option>
+        <option value="UnifrakturMaguntia">UnifrakturMaguntia</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label class="control-label">Velocità <span id="speedValue" class="control-value">25</span></label>
+      <input type="range" id="speedSlider" class="control-range" min="1" max="100" value="25">
+    </div>
+  </div>
+  <script src="js/script.js"></script>
+</body>
+</html>
