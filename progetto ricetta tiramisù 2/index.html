@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiramisù — Ricetta di Sasso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-top">
+        <div class="lang-toggle">
+          <button class="lang-btn active" data-lang="it">IT</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+      <h1 class="recipe-title" data-it="Tiramisù" data-en="Tiramisù">Tiramisù</h1>
+      <p class="recipe-chef" data-it="Ricetta di Sasso" data-en="Recipe by Sasso">Ricetta di Sasso</p>
+    </header>
+
+    <section class="portion-selector">
+      <label data-it="Porzioni:" data-en="Servings:">Porzioni:</label>
+      <select id="portion-select">
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="6">6</option>
+        <option value="8" selected>8</option>
+        <option value="10">10</option>
+        <option value="12">12</option>
+        <option value="custom" data-it="Personalizzato" data-en="Custom">Personalizzato</option>
+      </select>
+      <input type="number" id="portion-custom" min="1" value="8" placeholder="N°">
+    </section>
+
+    <section class="ingredients">
+      <h2 data-it="Ingredienti" data-en="Ingredients">Ingredienti</h2>
+      <ul id="ingredient-list"></ul>
+    </section>
+
+    <section class="steps">
+      <h2 data-it="Preparazione" data-en="Preparation">Preparazione</h2>
+      <ol id="steps-list"></ol>
+    </section>
+
+    <section class="share">
+      <button id="share-btn" data-it="Copia link" data-en="Copy link">Copia link</button>
+      <span id="share-feedback" class="hidden" data-it="Link copiato!" data-en="Link copied!">Link copiato!</span>
+    </section>
+  </div>
+
+  <footer>
+    <p data-it="Ricetta di Sasso — Tutti i diritti riservati" data-en="Recipe by Sasso — All rights reserved">Ricetta di Sasso — Tutti i diritti riservati</p>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
