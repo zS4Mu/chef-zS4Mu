@@ -3,44 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zitto &amp; Parlato</title>
+  <title>Zitto &amp; Parlato</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   background: #ffffff;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
+  align-items: stretch;
   min-height: 100vh;
-  font-family: system-ui, sans-serif;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
   transition: background 0.3s;
 }
+.svg-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
 svg#face {
-  width: min(95vw, 95vh);
-  max-width: 1920px;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   display: block;
 }
 .controls {
-  margin-top: 24px;
+  width: 220px;
+  flex-shrink: 0;
+  padding: 24px 16px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  align-items: stretch;
+  border-left: 1px solid #e0e0e0;
 }
 .controls label {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  font-size: 14px;
+  align-items: stretch;
+  font-size: 1.3rem;
+  font-weight: 300;
   gap: 4px;
+  color: #000;
 }
 .controls input[type="range"] {
-  width: 140px;
+  width: 100%;
 }
 .volume-indicator {
-  width: 200px;
+  width: 100%;
   height: 8px;
   background: #eee;
   border-radius: 4px;
@@ -54,25 +70,34 @@ svg#face {
 }
 .invert-btn {
   padding: 8px 16px;
-  border: 2px solid currentColor;
+  border: 1px solid #000;
   background: transparent;
-  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 1.4rem;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
   color: #000;
-  transition: color 0.3s;
+  transition: background 0.2s, color 0.2s;
+}
+.invert-btn:hover {
+  background: #A3FB00;
+  border-color: #A3FB00;
 }
 body.invert { background: #000000; }
 body.invert svg#face { filter: invert(1); }
 body.invert .volume-indicator { background: #333; }
 body.invert .volume-indicator-bar { background: #24e2e1; }
-body.invert .invert-btn { color: #fff; }
+body.invert .controls { border-left-color: #444; }
+body.invert .invert-btn { border-color: #fff; color: #fff; }
+body.invert .invert-btn:hover { background: #A3FB00; color: #000; border-color: #A3FB00; }
 body.invert label { color: #fff; }
 </style>
 </head>
 <body>
 
+<div class="svg-wrap">
 <svg id="face" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <rect id="bg-rect" fill="#ffffff" width="1920" height="1080" x="0" y="0"/>
   <rect id="bocca-bg" fill="#db1d1e" x="710.8" y="638" width="496.6" height="139.6"/>
   <g id="denti_inferiori">
     <rect id="di-0" fill="#dd731c" x="724.5" y="730.7" width="25.7" height="50.2"/>
@@ -116,25 +141,15 @@ body.invert label { color: #fff; }
   <path id="baffo-sx" fill="#dcc11e" d="M960,648.2c-86.9,44.5-193,41.8-254.9,0-43.6-29.5-73-83.7-45.8-126.2,41.5-64.9,191.4-65.9,248-28.1,13.2,8.8,36.1,29.6,27.6,41.4-7.9,11-41.5,11.8-44.9,6.4-2.5-4,12.3-9.6,10.4-15.9-3-9.8-43.7-10.8-48.4-10.8-21.2-.4-109.1-1.9-122.8,32.5-8.4,21.2,14.8,47.7,43.2,59.9,41.9,18,90.1,2.7,89.9,0,0-2.4-36.8,3.1-50.9-11.5-9.5-9.8-6.6-26.7,5.9-37,17.5-14.3,50.8-13.3,55.3-6.4,5.4,8.3-32.3,23.5-27.6,33.2,3.3,6.9,28.3,10.6,115,0v62.5h0Z"/>
   <path id="naso" fill="#dd731c" d="M959,501.9h-32c-9.7-11.1-16-15.9-18.6-14.3-2,1.1-2,5.9,0,14.3h-22c-14.6-6-22.9-20.6-20.6-34.4,1.8-10.4,9.6-20.3,21-23.4,11.5-3.1,21,2.2,22.9,3.3,11.7-9.1,23.4-18.2,35.1-27.3,8.3-6.5,19.9-6.5,28.3,0,11.7,9.1,23.4,18.2,35.1,27.3,1.9-1.1,11.5-6.5,22.9-3.3,11.4,3.1,19.3,13.1,21,23.4,2.4,13.8-6,28.4-20.6,34.4h-22c2-8.4,2-13.2,0-14.3-2.7-1.5-8.9,3.3-18.6,14.3h-32"/>
 </svg>
+</div>
 
 <div class="controls">
-  <label>
-    Attack
-    <input type="range" id="slider-attack" min="0.01" max="0.5" step="0.01" value="0.1">
-  </label>
-  <label>
-    Release
-    <input type="range" id="slider-release" min="0.01" max="0.5" step="0.01" value="0.05">
-  </label>
-  <label>
-    Soglia
-    <input type="range" id="slider-threshold" min="0" max="0.1" step="0.005" value="0.02">
-  </label>
   <div class="volume-indicator">
     <div class="volume-indicator-bar" id="volume-bar"></div>
   </div>
   <button id="btn-start" class="invert-btn">Avvia Microfono</button>
   <button id="btn-invert" class="invert-btn">Inverti Colori</button>
+  <button id="btn-record" class="invert-btn">Registra</button>
 </div>
 
 <script>
@@ -170,20 +185,20 @@ const MORPH = {
   boccaBg: {
     el: () => document.getElementById('bocca-bg'),
     attrs: [
-      { attr: 'height', a: 139.6, b: 343.9 }
+      { attr: 'height', a: 139.6, b: 442 }
     ]
   },
   dentiSup: Array.from({ length: 14 }, (_, i) => ({
     el: () => document.getElementById('ds-' + i),
     attrs: [
-      { attr: 'height', a: 52.8, b: 108 }
+      { attr: 'height', a: 52.8, b: 180 }
     ]
   })),
   dentiInf: Array.from({ length: 14 }, (_, i) => ({
     el: () => document.getElementById('di-' + i),
     attrs: [
-      { attr: 'y', a: 730.7, b: 896.1 },
-      { attr: 'height', a: 50.2, b: 100.4 }
+      { attr: 'y', a: 730.7, b: 920 },
+      { attr: 'height', a: 50.2, b: 160 }
     ]
   })),
   pupillaSx: {
@@ -229,11 +244,13 @@ let audioCtx, analyser, dataArray;
 let isAudioReady = false;
 let envelope = 0;
 let micLevel = 0;
+let audioStream = null;
+const MIC_GAIN = 5;
 
 const envelopeParams = {
-  attack: 0.1,
-  release: 0.05,
-  threshold: 0.02
+  attack: 0.2,
+  release: 0.2,
+  threshold: 0.002
 };
 
 async function initAudio() {
@@ -243,6 +260,7 @@ async function initAudio() {
       await audioCtx.resume();
     }
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioStream = stream;
     const source = audioCtx.createMediaStreamSource(stream);
     analyser = audioCtx.createAnalyser();
     analyser.fftSize = 1024;
@@ -270,8 +288,9 @@ function getRMS() {
 
 function updateEnvelope() {
   micLevel = getRMS();
+  const amplified = Math.min(1, micLevel * MIC_GAIN);
   const t = envelopeParams.threshold;
-  const signal = micLevel > t ? (micLevel - t) / (1 - t) : 0;
+  const signal = amplified > t ? (amplified - t) / (1 - t) : 0;
   if (signal > envelope) {
     envelope += envelopeParams.attack * (signal - envelope);
   } else {
@@ -283,35 +302,108 @@ function updateEnvelope() {
 function updateVolumeUI(level) {
   const bar = document.getElementById('volume-bar');
   if (bar) {
-    bar.style.width = Math.min(100, level * 300) + '%';
+    bar.style.width = Math.min(100, level * 100) + '%';
   }
+}
+
+function applyExtras(t) {
+  const browDy = lerp(0, -30, t);
+  const sx = document.getElementById('sopracciglia-sx');
+  const dx = document.getElementById('sopracciglia-dx');
+  if (sx) sx.setAttribute('transform', 'translate(0,' + browDy.toFixed(1) + ')');
+  if (dx) dx.setAttribute('transform', 'translate(0,' + browDy.toFixed(1) + ')');
+  const naso = document.getElementById('naso');
+  if (naso) {
+    const s = lerp(1, 1.06, t);
+    naso.setAttribute('transform', 'translate(959,502) scale(' + s.toFixed(4) + ',1) translate(-959,-502)');
+  }
+}
+
+// Recording
+let recCanvas = null, recCtx = null, mediaRecorder = null, recChunks = [];
+let isRecording = false;
+let recFrameCount = 0;
+
+function captureSVGFrame() {
+  if (!recCanvas || !recCtx) return;
+  recCtx.filter = document.body.classList.contains('invert') ? 'invert(1)' : 'none';
+  const svg = document.getElementById('face');
+  const svgData = new XMLSerializer().serializeToString(svg);
+  const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = () => {
+    recCtx.drawImage(img, 0, 0, 1920, 1080);
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = () => URL.revokeObjectURL(url);
+  img.src = url;
+}
+
+function startRecording() {
+  if (!audioStream) return;
+  recCanvas = document.createElement('canvas');
+  recCanvas.width = 1920;
+  recCanvas.height = 1080;
+  recCtx = recCanvas.getContext('2d');
+  const canvasStream = recCanvas.captureStream(60);
+  const micTrack = audioStream.getAudioTracks()[0].clone();
+  const tracks = [...canvasStream.getTracks(), micTrack];
+  const combinedStream = new MediaStream(tracks);
+  const mimeType = 'video/webm;codecs=vp9,opus';
+  mediaRecorder = new MediaRecorder(combinedStream, { mimeType });
+  recChunks = [];
+  mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recChunks.push(e.data); };
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recChunks, { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const ts = new Date().toISOString().slice(0,19).replace(/[:-]/g, '');
+    a.href = url;
+    a.download = 'registrazione_' + ts + '.webm';
+    a.click();
+    URL.revokeObjectURL(url);
+    recChunks = [];
+    recCanvas = null; recCtx = null;
+  };
+  mediaRecorder.start();
+  isRecording = true;
+  document.getElementById('btn-record').textContent = '⏺ Registrazione…';
+  document.getElementById('btn-record').style.color = '#db1d1e';
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  isRecording = false;
+  document.getElementById('btn-record').textContent = 'Registra';
+  document.getElementById('btn-record').style.color = '';
 }
 
 function animate() {
   if (isAudioReady) {
     updateEnvelope();
     applyMorph(envelope);
-    updateVolumeUI(micLevel);
+    applyExtras(envelope);
+    updateVolumeUI(envelope);
+    if (isRecording) {
+      captureSVGFrame();
+    }
   } else {
     applyMorph(0);
+    applyExtras(0);
   }
   requestAnimationFrame(animate);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('slider-attack').addEventListener('input', function() {
-    envelopeParams.attack = parseFloat(this.value);
-  });
-  document.getElementById('slider-release').addEventListener('input', function() {
-    envelopeParams.release = parseFloat(this.value);
-  });
-  document.getElementById('slider-threshold').addEventListener('input', function() {
-    envelopeParams.threshold = parseFloat(this.value);
-  });
   document.getElementById('btn-invert').addEventListener('click', () => {
     document.body.classList.toggle('invert');
   });
   document.getElementById('btn-start').addEventListener('click', initAudio);
+  document.getElementById('btn-record').addEventListener('click', () => {
+    if (isRecording) stopRecording();
+    else startRecording();
+  });
   animate();
 });
 </script>

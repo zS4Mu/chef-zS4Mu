@@ -14,14 +14,14 @@ const projects = [
   {
     id: 'tiramisu',
     title: 'Ricetta Tiramisù',
-    path: 'progetto ricetta tiramisù/codebase/index.html',
+    path: 'progetto ricetta tiramisù 2/index.html',
     thumb: 'assets/thumbnails/tiramisu.jpg',
   },
   {
     id: 'sound',
     title: 'Sound Responsive',
     path: 'progetto sound responsive/index.html',
-    thumb: 'assets/thumbnails/sound-responsive.jpg',
+    thumb: 'assets/thumbnails/sound-responsive.png',
   },
   {
     id: 'progetto5',
@@ -196,8 +196,6 @@ function renderMosaic() {
 function showProject(index) {
   const p = projects[index];
   currentProject = index;
-  projectTitle.textContent = p.title;
-
   projectContent.innerHTML = '';
   if (p.path) {
     const iframe = document.createElement('iframe');

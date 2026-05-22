@@ -3,29 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pattern Cellulare Organico</title>
+  <title>Pattern Cellulare Organico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-html,body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Helvetica Neue',Arial,sans-serif; }
+html,body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'DM Sans', sans-serif; }
 svg { display:block; width:100%; height:100%; }
 #controls {
   position:fixed; bottom:0; left:0; right:0;
   background:rgba(0,0,0,0.85); border-top:1px solid #333;
-  padding:10px 20px; display:flex; flex-wrap:wrap; align-items:center;
-  gap:12px; backdrop-filter:blur(6px); z-index:10;
+  padding:12px 24px; display:flex; flex-wrap:wrap; align-items:center;
+  gap:16px; backdrop-filter:blur(6px); z-index:10;
 }
-.ctrl { display:flex; align-items:center; gap:6px; }
-.ctrl label { font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:#999; min-width:55px; }
-.ctrl input[type=range] { width:80px; cursor:pointer; accent-color:#fff; }
-.ctrl input[type=color] { width:28px; height:22px; padding:0; border:1px solid #555; border-radius:3px; background:0; cursor:pointer; }
-.ctrl .val { font-size:10px; color:#666; min-width:20px; text-align:right; }
+.ctrl { display:flex; align-items:center; gap:8px; }
+.ctrl label { font-size:1.1rem; text-transform:uppercase; letter-spacing:.02em; color:#999; font-weight:500; min-width:55px; }
+.ctrl input[type=range] { width:80px; cursor:pointer; accent-color:#A3FB00; }
+.ctrl input[type=color] { width:28px; height:22px; padding:0; border:1px solid #555; border-radius:0; background:0; cursor:pointer; }
+.ctrl .val { font-size:1.1rem; color:#666; min-width:20px; text-align:right; font-weight:300; }
 #controls button {
-  background:#fff; color:#000; border:none; padding:4px 10px;
-  font-size:10px; text-transform:uppercase; letter-spacing:.5px;
-  cursor:pointer; border-radius:3px;
+  background:#fff; color:#000; border:none; padding:6px 14px;
+  font-size:1.1rem; font-weight:500; font-family:'DM Sans', sans-serif;
+  cursor:pointer; transition:background 0.2s;
 }
-#controls button:hover { background:#ccc; }
-.btns { display:flex; gap:6px; margin-left:auto; }
+#controls button:hover { background:#A3FB00; }
+.btns { display:flex; gap:8px; margin-left:auto; }
 </style>
 </head>
 <body>
