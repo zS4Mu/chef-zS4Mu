@@ -173,7 +173,7 @@ function renderMosaic() {
         gt.style.width = wPct + '%';
         gt.style.height = gapH + 'px';
         const h2 = document.createElement('h2');
-        h2.textContent = 'ABOUT';
+        h2.textContent = 'HELLO!';
         const p = document.createElement('p');
         p.textContent = "Mi chiamo Samuele, ho 22 anni e sono un progettista grafico cresciuto sulle pendici dell'Etna, a Zafferana Etnea. Guardo il mondo come un curioso detective: alleno il senso critico, metto alla prova il mio giudizio e cerco quello che gli altri non vedono ancora. È da questa tensione verso l'osservazione che nasce il mio approccio al design. Mi muovo a mio agio tra il minimal e lo sperimentale. Costruisco la mia indipendenza pixel per pixel.";
         gt.appendChild(h2);
