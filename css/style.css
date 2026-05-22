@@ -107,6 +107,8 @@ button {
   pointer-events: none;
   opacity: var(--hero-opacity);
   z-index: 0;
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
 
 .hero-pattern-bg svg {
