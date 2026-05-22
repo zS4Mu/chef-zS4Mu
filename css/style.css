@@ -254,20 +254,10 @@ button {
   font-size: 1.4rem;
 }
 
-.footer-workshop p {
+.footer-contacts {
   font-size: 1rem;
-  line-height: 1.5;
   color: #000;
-  margin: 0 0 0.4rem;
-}
-
-.footer-workshop p:last-child {
-  margin-bottom: 0;
-}
-
-.footer-courses {
-  display: flex;
-  gap: 3rem;
+  margin: 0;
 }
 
 .footer-icons {
