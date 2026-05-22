@@ -252,7 +252,7 @@ button {
 .footer-workshop p {
   font-size: 1rem;
   line-height: 1.5;
-  color: #999;
+  color: #fff;
   margin: 0 0 0.4rem;
 }
 
@@ -274,8 +274,9 @@ button {
   display: block;
   width: 32px;
   height: 32px;
-  background: #e0e0e0;
+  background: #fff;
   border-radius: 4px;
+  mix-blend-mode: difference;
   transition: background 0.2s;
 }
 
@@ -287,12 +288,13 @@ button {
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
-  background: #A3FB00;
-  color: #5A5A5A;
+  background: #fff;
+  color: #000;
   font-size: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  mix-blend-mode: difference;
   transition: background 0.2s;
 }
 
