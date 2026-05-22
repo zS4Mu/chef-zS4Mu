@@ -4,39 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pattern Cellulare Organico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-html,body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Helvetica Neue',Arial,sans-serif; color:#eee; }
+html,body { width:100%; height:100%; overflow:hidden; background:#000; }
+body { font-family:'DM Sans',sans-serif; font-weight:300; font-size:1rem; color:#000; }
 #layout { display:flex; width:100%; height:100%; }
 #svgWrap { flex:1; overflow:hidden; }
 svg { display:block; width:100%; height:100%; }
 
 #side {
-  width:200px; min-width:200px; background:rgba(0,0,0,0.92);
-  border-left:1px solid #222; padding:18px 14px 14px;
+  width:200px; min-width:200px; background:#FFFFFF;
+  border-left:1px solid #e0e0e0; padding:18px 14px 14px;
   display:flex; flex-direction:column; gap:12px;
-  backdrop-filter:blur(8px); z-index:10;
+  z-index:10;
 }
-#side .title { font-size:9px; text-transform:uppercase; letter-spacing:1px; color:#555; }
+#side .title { font-size:9px; text-transform:uppercase; letter-spacing:1px; color:#999; font-weight:500; }
 #side .sec { display:flex; flex-direction:column; gap:6px; }
 .srow { display:flex; align-items:center; gap:6px; }
-.srow label { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#888; min-width:48px; }
-.srow input[type=range] { flex:1; height:14px; cursor:pointer; accent-color:#fff; -webkit-appearance:none; appearance:none; background:0; }
-.srow input[type=range]::-webkit-slider-runnable-track { height:2px; background:#333; border-radius:1px; }
-.srow input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:10px; height:10px; border-radius:50%; background:#fff; margin-top:-4px; }
-.srow input[type=range]::-moz-range-track { height:2px; background:#333; border-radius:1px; }
-.srow input[type=range]::-moz-range-thumb { width:10px; height:10px; border-radius:50%; background:#fff; border:none; }
-.srow .val { font-size:9px; color:#555; min-width:20px; text-align:right; font-variant-numeric:tabular-nums; }
+.srow label { font-size:9px; text-transform:uppercase; letter-spacing:.4px; color:#666; min-width:48px; font-weight:500; }
+.srow input[type=range] { flex:1; height:14px; cursor:pointer; accent-color:#A3FB00; -webkit-appearance:none; appearance:none; background:0; }
+.srow input[type=range]::-webkit-slider-runnable-track { height:2px; background:#ddd; border-radius:1px; }
+.srow input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:10px; height:10px; border-radius:50%; background:#A3FB00; margin-top:-4px; }
+.srow input[type=range]::-moz-range-track { height:2px; background:#ddd; border-radius:1px; }
+.srow input[type=range]::-moz-range-thumb { width:10px; height:10px; border-radius:50%; background:#A3FB00; border:none; }
+.srow .val { font-size:9px; color:#999; min-width:20px; text-align:right; font-variant-numeric:tabular-nums; }
 .crow { display:flex; align-items:center; gap:8px; margin:0; }
-.crow input[type=color] { width:22px; height:18px; padding:0; border:1px solid #444; border-radius:2px; background:0; cursor:pointer; }
-#side .sep { border:none; border-top:1px solid #222; margin:0; }
+.crow input[type=color] { width:22px; height:18px; padding:0; border:1px solid #ddd; border-radius:2px; background:#fff; cursor:pointer; }
+#side .sep { border:none; border-top:1px solid #eee; margin:0; }
 #side .btns { display:flex; gap:4px; }
 #side button {
-  flex:1; background:transparent; color:#888; border:1px solid #333;
+  flex:1; background:transparent; color:#666; border:1px solid #ddd;
   padding:5px 0; font-size:9px; text-transform:uppercase; letter-spacing:.5px;
-  cursor:pointer; border-radius:2px; transition:color .15s,border-color .15s;
+  cursor:pointer; border-radius:2px; transition:color .15s,border-color .15s,background .15s;
+  font-weight:500;
 }
-#side button:hover { color:#fff; border-color:#666; }
+#side button:hover { color:#000; border-color:#A3FB00; background:#A3FB00; }
 </style>
 </head>
 <body>
